@@ -10,22 +10,41 @@
             font-family: 'Arial', sans-serif;
             color: #ffffff;
             overflow: hidden;
-            background-color: #0a0a0a; /* Dark fallback */
-            background-image: url('background.gif');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            background-color: #000000; /* Dark fallback */
         }
         
-        /* Add an overlay for better text visibility */
+        /* Background container */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -10;
+        }
+        
+        /* Individual background slides */
+        .background-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+        
+        /* Overlay for better text visibility */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: -5;
         }
         
         .content {
@@ -43,25 +62,34 @@
         h1 {
             font-size: 4em;
             margin-bottom: 30px;
-            text-shadow: 0 0 10px #ff5a00;
+            text-shadow: 0 0 10px #ff5a00, 0 0 20px #ff5a00;
             color: #ffffff;
             font-family: 'Arial Black', Gadget, sans-serif;
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0% {text-shadow: 0 0 10px #ff5a00;}
+            50% {text-shadow: 0 0 20px #ff5a00, 0 0 30px #ff5a00;}
+            100% {text-shadow: 0 0 10px #ff5a00;}
         }
         
         .status-text {
             font-size: 1.5em;
             margin-bottom: 20px;
             color: #dddddd;
+            text-shadow: 0 0 5px #000000;
         }
         
         #progress-bar {
             width: 80%;
             max-width: 600px;
             height: 30px;
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(0, 0, 0, 0.5);
             border-radius: 15px;
             overflow: hidden;
             margin-bottom: 30px;
+            border: 1px solid rgba(255, 90, 0, 0.3);
         }
         
         #progress {
@@ -78,6 +106,7 @@
             border-radius: 10px;
             max-width: 600px;
             border: 1px solid rgba(255, 90, 0, 0.5);
+            box-shadow: 0 0 10px rgba(255, 90, 0, 0.3);
         }
         
         .rules h2 {
@@ -86,6 +115,7 @@
             font-size: 2em;
             text-transform: uppercase;
             letter-spacing: 2px;
+            text-shadow: 0 0 5px #000000;
         }
         
         .rules ol {
@@ -101,6 +131,9 @@
     </style>
 </head>
 <body>
+    <div class="background-container" id="background-container">
+        <!-- Background slides will be dynamically added here -->
+    </div>
     <div class="overlay"></div>
     
     <!-- Audio -->
@@ -130,7 +163,53 @@
     </div>
     
     <script>
-        // This connects to Garry's Mod's loading API
+        // Background slideshow
+        document.addEventListener("DOMContentLoaded", function() {
+            // List of background GIFs
+            const backgrounds = [
+                'background1.gif',
+                'background2.gif',
+                'background3.gif'
+                // Add more as needed
+            ];
+            
+            // Get the container
+            const container = document.getElementById('background-container');
+            
+            // Create slide elements
+            backgrounds.forEach((bg, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'background-slide';
+                slide.id = 'slide-' + index;
+                slide.style.backgroundImage = `url('${bg}')`;
+                container.appendChild(slide);
+            });
+            
+            let currentSlide = 0;
+            let totalSlides = backgrounds.length;
+            
+            // Show the first slide
+            document.getElementById('slide-0').style.opacity = 1;
+            
+            // Function to transition to next slide
+            function nextSlide() {
+                // Fade out current slide
+                document.getElementById('slide-' + currentSlide).style.opacity = 0;
+                
+                // Move to next slide
+                currentSlide = (currentSlide + 1) % totalSlides;
+                
+                // Fade in new slide after a short delay
+                setTimeout(() => {
+                    document.getElementById('slide-' + currentSlide).style.opacity = 1;
+                }, 1000); // 1 second black screen transition
+            }
+            
+            // Set interval for transitions (5 seconds per slide)
+            setInterval(nextSlide, 5000);
+        });
+        
+        // Garry's Mod loading API functions
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
             // Set server name
             document.querySelector('h1').textContent = servername;
