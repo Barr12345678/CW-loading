@@ -2,45 +2,190 @@
 <html>
 <head>
     <title>Clone Wars RP Loading Screen</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            color: #ffffff;
+            overflow: hidden;
+        }
+        
+        #background-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -100;
+            background-size: cover;
+            object-fit: cover;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        
+        .content {
+            position: relative;
+            text-align: center;
+            padding: 20px;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+            display: none; /* Hide until you have a real logo */
+        }
+        
+        h1 {
+            font-size: 4em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #ff5a00;
+            color: #ffffff;
+            font-family: 'Arial Black', Gadget, sans-serif;
+        }
+        
+        .status-text {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #dddddd;
+        }
+        
+        #progress-bar {
+            width: 80%;
+            max-width: 600px;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        #progress {
+            width: 0%;
+            height: 100%;
+            background-color: #ff5a00;
+            border-radius: 15px;
+            transition: width 0.3s ease;
+        }
+        
+        .rules {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 25px 40px;
+            border-radius: 10px;
+            max-width: 600px;
+            border: 1px solid rgba(255, 90, 0, 0.5);
+        }
+        
+        .rules h2 {
+            color: #ff5a00;
+            margin-top: 0;
+            font-size: 2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .rules ol {
+            text-align: left;
+            padding-left: 20px;
+            color: #ffffff;
+            font-size: 1.2em;
+        }
+        
+        .rules li {
+            margin-bottom: 15px;
+        }
+    </style>
 </head>
 <body>
     <!-- Video Background -->
-    <video autoplay loop muted id="background-video">
+    <video autoplay loop muted playsinline id="background-video">
         <source src="background.mp4" type="video/mp4">
     </video>
     
-    <!-- Audio (plays when player joins) -->
+    <!-- Overlay for better text visibility -->
+    <div class="overlay"></div>
+    
+    <!-- Audio -->
     <audio id="background-music" loop>
         <source src="music.mp3" type="audio/mp3">
     </audio>
     
-    <!-- Loading Content -->
     <div class="content">
-        <div class="logo">
-            <img src="logo.png" alt="Server Logo">
-        </div>
+        <!-- Uncomment when you have a logo -->
+        <!-- <img class="logo" src="logo.png" alt="Server Logo"> -->
+        
         <h1>Clone Wars RP</h1>
         
-        <div class="progress-container">
-            <div id="progress-bar"><div id="progress"></div></div>
-            <div id="status-text">Connecting...</div>
+        <div class="status-text" id="status-text">Connecting...</div>
+        
+        <div id="progress-bar">
+            <div id="progress"></div>
         </div>
         
-        <div class="server-info">
-            <div class="rules">
-                <h2>Server Rules</h2>
-                <ol>
-                    <li>Respect all players</li>
-                    <li>No RDM (Random Death Match)</li>
-                    <li>Follow the RP guidelines</li>
-                    <li>Listen to staff</li>
-                    <li>Have fun!</li>
-                </ol>
-            </div>
+        <div class="rules">
+            <h2>Server Rules</h2>
+            <ol>
+                <li>Respect all players</li>
+                <li>No RDM (Random Death Match)</li>
+                <li>Follow the RP guidelines</li>
+                <li>Listen to staff</li>
+                <li>Have fun!</li>
+            </ol>
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <script>
+        // This connects to Garry's Mod's loading API
+        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
+            // Set server name
+            document.querySelector('h1').textContent = servername;
+            
+            // Play music with proper volume
+            var music = document.getElementById('background-music');
+            music.volume = volume;
+            music.play();
+        }
+        
+        function SetFilesTotal(total) {
+            this.filesTotal = total;
+        }
+        
+        function SetFilesNeeded(needed) {
+            this.filesNeeded = needed;
+            updateProgress();
+        }
+        
+        function DownloadingFile(fileName) {
+            document.getElementById('status-text').textContent = "Downloading: " + fileName;
+        }
+        
+        function SetStatusChanged(status) {
+            document.getElementById('status-text').textContent = status;
+        }
+        
+        function updateProgress() {
+            if (this.filesTotal > 0) {
+                var progress = Math.floor(((this.filesTotal - this.filesNeeded) / this.filesTotal) * 100);
+                document.getElementById('progress').style.width = progress + "%";
+            }
+        }
+    </script>
 </body>
 </html>
