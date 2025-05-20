@@ -10,29 +10,22 @@
             font-family: 'Arial', sans-serif;
             color: #ffffff;
             overflow: hidden;
-        }
-        
-        #background-video {
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            z-index: -100;
+            background-color: #0a0a0a; /* Dark fallback */
+            background-image: url('background.gif');
             background-size: cover;
-            object-fit: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
         
+        /* Add an overlay for better text visibility */
         .overlay {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: -1;
+            z-index: 0;
         }
         
         .content {
@@ -45,12 +38,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-        }
-        
-        .logo {
-            max-width: 200px;
-            margin-bottom: 20px;
-            display: none; /* Hide until you have a real logo */
         }
         
         h1 {
@@ -114,12 +101,6 @@
     </style>
 </head>
 <body>
-    <!-- Video Background -->
-    <video autoplay loop muted playsinline id="background-video">
-        <source src="background.mp4" type="video/mp4">
-    </video>
-    
-    <!-- Overlay for better text visibility -->
     <div class="overlay"></div>
     
     <!-- Audio -->
@@ -128,10 +109,7 @@
     </audio>
     
     <div class="content">
-        <!-- Uncomment when you have a logo -->
-        <!-- <img class="logo" src="logo.png" alt="Server Logo"> -->
-        
-        <h1>Cerulean Networks</h1>
+        <h1>Clone Wars RP</h1>
         
         <div class="status-text" id="status-text">Connecting...</div>
         
@@ -140,7 +118,7 @@
         </div>
         
         <div class="rules">
-            <h2>Server Rules</h2>
+            <h2>SERVER RULES</h2>
             <ol>
                 <li>Respect all players</li>
                 <li>No RDM (Random Death Match)</li>
@@ -159,12 +137,17 @@
             
             // Play music with proper volume
             var music = document.getElementById('background-music');
-            music.volume = volume;
-            music.play();
+            if (music) {
+                music.volume = volume;
+                music.play().catch(function(error) {
+                    console.log("Audio couldn't play automatically: " + error);
+                });
+            }
         }
         
         function SetFilesTotal(total) {
             this.filesTotal = total;
+            updateProgress();
         }
         
         function SetFilesNeeded(needed) {
