@@ -292,106 +292,190 @@
         </div>
     </div>
     
-    <script>
-        // Slideshow variables
-        const backgroundGifs = ['background1.gif', 'background2.gif', 'background3.gif', 'background4.gif', 'background5.gif'];
-        let shuffledOrder = [];
-        let currentIndex = 0;
-        
-        // Loading progress variables
-        let filesTotal = 0;
-        let filesNeeded = 0;
-        
-        // Shuffle function
-        function shuffleArray(array) {
-            const shuffled = [...array];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            return shuffled;
+<script>
+    // Slideshow variables
+    const backgroundGifs = ['background1.gif', 'background2.gif', 'background3.gif', 'background4.gif', 'background5.gif'];
+    let shuffledOrder = [];
+    let currentIndex = 0;
+    
+    // Loading progress variables - using window object for better compatibility
+    window.filesTotal = 0;
+    window.filesNeeded = 0;
+    window.downloadedFiles = 0;
+    
+    // Shuffle function
+    function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
+        return shuffled;
+    }
+    
+    // Initialize slideshow
+    function initSlideshow() {
+        shuffledOrder = shuffleArray(backgroundGifs);
+        currentIndex = 0;
+        const background = document.getElementById('background');
+        background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
+        background.style.opacity = 1;
+    }
+    
+    // Change to next slide
+    function nextSlide() {
+        const background = document.getElementById('background');
         
-        // Initialize slideshow
-        function initSlideshow() {
-            shuffledOrder = shuffleArray(backgroundGifs);
-            currentIndex = 0;
-            const background = document.getElementById('background');
-            background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
-            background.style.opacity = 1;
-        }
+        background.style.opacity = 0;
         
-        // Change to next slide
-        function nextSlide() {
-            const background = document.getElementById('background');
+        setTimeout(() => {
+            currentIndex++;
             
-            background.style.opacity = 0;
+            if (currentIndex >= shuffledOrder.length) {
+                shuffledOrder = shuffleArray(backgroundGifs);
+                currentIndex = 0;
+            }
+            
+            background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
             
             setTimeout(() => {
-                currentIndex++;
-                
-                if (currentIndex >= shuffledOrder.length) {
-                    shuffledOrder = shuffleArray(backgroundGifs);
-                    currentIndex = 0;
-                }
-                
-                background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
-                
-                setTimeout(() => {
-                    background.style.opacity = 1;
-                }, 100);
-                
-            }, 800);
+                background.style.opacity = 1;
+            }, 100);
+            
+        }, 800);
+    }
+    
+    // Start slideshow
+    document.addEventListener('DOMContentLoaded', function() {
+        initSlideshow();
+        setInterval(nextSlide, 6000);
+    });
+    
+    // More robust progress update function
+    function updateProgress() {
+        try {
+            let progress = 0;
+            
+            if (window.filesTotal > 0) {
+                const downloaded = Math.max(0, window.filesTotal - window.filesNeeded);
+                progress = Math.floor((downloaded / window.filesTotal) * 100);
+            } else if (window.downloadedFiles > 0) {
+                // Fallback calculation
+                progress = Math.min(window.downloadedFiles * 10, 95);
+            }
+            
+            // Ensure progress is between 0 and 100
+            progress = Math.max(0, Math.min(100, progress));
+            
+            // Update progress bar
+            const progressBar = document.getElementById('progress');
+            const progressText = document.getElementById('progress-percent');
+            
+            if (progressBar) {
+                progressBar.style.width = progress + "%";
+            }
+            if (progressText) {
+                progressText.textContent = progress + "%";
+            }
+            
+            // Debug logging
+            console.log(`Progress Update: ${window.filesTotal - window.filesNeeded}/${window.filesTotal} = ${progress}%`);
+            
+        } catch (error) {
+            console.log("Progress update error:", error);
         }
-        
-        // Start slideshow
-        document.addEventListener('DOMContentLoaded', function() {
-            initSlideshow();
-            setInterval(nextSlide, 6000);
-        });
-        
-        // Garry's Mod loading API functions
-        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
-            document.querySelector('.server-title').textContent = servername;
+    }
+    
+    // Garry's Mod loading API functions - improved versions
+    function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
+        try {
+            document.querySelector('.server-title').textContent = servername || 'Clone Wars RP';
             
             var music = document.getElementById('background-music');
-            if (music) {
-                music.volume = volume;
+            if (music && volume !== undefined) {
+                music.volume = Math.max(0, Math.min(1, volume));
                 music.play().catch(function(error) {
-                    console.log("Audio couldn't play automatically: " + error);
+                    console.log("Audio couldn't play automatically:", error);
                 });
             }
+        } catch (error) {
+            console.log("GameDetails error:", error);
         }
-        
-        function SetFilesTotal(total) {
-            filesTotal = total;
+    }
+    
+    function SetFilesTotal(total) {
+        try {
+            window.filesTotal = parseInt(total) || 0;
+            console.log("Files Total:", window.filesTotal);
             updateProgress();
+        } catch (error) {
+            console.log("SetFilesTotal error:", error);
         }
-        
-        function SetFilesNeeded(needed) {
-            filesNeeded = needed;
+    }
+    
+    function SetFilesNeeded(needed) {
+        try {
+            window.filesNeeded = parseInt(needed) || 0;
+            console.log("Files Needed:", window.filesNeeded);
             updateProgress();
+        } catch (error) {
+            console.log("SetFilesNeeded error:", error);
         }
-        
-        function DownloadingFile(fileName) {
-            document.getElementById('status-text').textContent = "Downloading: " + fileName;
+    }
+    
+    function DownloadingFile(fileName) {
+        try {
+            window.downloadedFiles = (window.downloadedFiles || 0) + 1;
+            
+            const statusElement = document.getElementById('status-text');
+            if (statusElement && fileName) {
+                statusElement.textContent = "Downloading: " + fileName.split('/').pop();
+            }
+            
+            console.log("Downloading:", fileName);
+            updateProgress();
+        } catch (error) {
+            console.log("DownloadingFile error:", error);
         }
-        
-        function SetStatusChanged(status) {
-            document.getElementById('status-text').textContent = status;
+    }
+    
+    function SetStatusChanged(status) {
+        try {
+            const statusElement = document.getElementById('status-text');
+            if (statusElement && status) {
+                statusElement.textContent = status;
+            }
+            console.log("Status:", status);
+        } catch (error) {
+            console.log("SetStatusChanged error:", error);
         }
-        
-        function updateProgress() {
-            if (filesTotal > 0 && filesNeeded >= 0) {
-                var downloaded = filesTotal - filesNeeded;
-                var progress = Math.floor((downloaded / filesTotal) * 100);
+    }
+    
+    // Fallback progress simulation for testing
+    let testProgress = 0;
+    function simulateProgress() {
+        if (window.location.protocol !== 'steam:' && window.filesTotal === 0) {
+            testProgress += 2;
+            if (testProgress <= 100) {
+                const progressBar = document.getElementById('progress');
+                const progressText = document.getElementById('progress-percent');
                 
-                progress = Math.max(0, Math.min(100, progress));
+                if (progressBar) progressBar.style.width = testProgress + "%";
+                if (progressText) progressText.textContent = testProgress + "%";
                 
-                document.getElementById('progress').style.width = progress + "%";
-                document.getElementById('progress-percent').textContent = progress + "%";
+                if (testProgress < 100) {
+                    setTimeout(simulateProgress, 200);
+                }
             }
         }
-    </script>
+    }
+    
+    // Start test simulation after 3 seconds if no real progress
+    setTimeout(() => {
+        if (window.filesTotal === 0) {
+            simulateProgress();
+        }
+    }, 3000);
+</script>
 </body>
 </html>
