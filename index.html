@@ -252,7 +252,7 @@
     <div class="main-container">
         <div class="header">
             <h1 class="server-title">Clone Wars RP</h1>
-            <div class="server-subtitle">Galactic Republic</div>
+            <div class="server-subtitle" id="map-name">Galactic Republic</div>
         </div>
         
         <div class="center-content">
@@ -280,18 +280,18 @@
                 <div class="rules-card">
                     <h2 class="rules-title">Server Protocol</h2>
                     <ul class="rules-list">
-                        <li><span class="rule-number">01</span>Respect all Republic personnel</li>
+                        <li><span class="rule-number">01</span>Follow All Server Rules</li>
                         <li><span class="rule-number">02</span>No unauthorized combat (RDM)</li>
-                        <li><span class="rule-number">03</span>Follow chain of command</li>
-                        <li><span class="rule-number">04</span>Obey commanding officers</li>
-                        <li><span class="rule-number">05</span>Honor the Republic</li>
+                        <li><span class="rule-number">03</span>Obey the golden rule</li>
+                        <li><span class="rule-number">04</span>Follow chain of command</li>
+                        <li><span class="rule-number">05</span>Respect everyone</li>
                     </ul>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            <div class="connection-info">May the Force be with you, soldier</div>
+            <div class="connection-info">May the Force be with you, soldier.</div>
         </div>
     </div>
     
@@ -412,6 +412,12 @@
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
             try {
                 document.querySelector('.server-title').textContent = servername || 'Clone Wars RP';
+                
+                // Update the map name subtitle
+                const mapElement = document.getElementById('map-name');
+                if (mapElement && mapname) {
+                    mapElement.textContent = mapname;
+                }
                 
                 var music = document.getElementById('background-music');
                 if (music && volume !== undefined) {
