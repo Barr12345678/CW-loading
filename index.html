@@ -148,12 +148,25 @@
     <script>
         // Slideshow variables
         const backgroundGifs = ['background1.gif', 'background2.gif', 'background3.gif', 'background4.gif', 'background5.gif'];
+        let shuffledOrder = [];
         let currentIndex = 0;
         
-        // Initialize slideshow
+        // Shuffle function
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        // Initialize slideshow with first shuffle
         function initSlideshow() {
+            shuffledOrder = shuffleArray(backgroundGifs);
+            currentIndex = 0;
             const background = document.getElementById('background');
-            background.style.backgroundImage = `url('${backgroundGifs[currentIndex]}')`;
+            background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
             background.style.opacity = 1;
         }
         
@@ -165,18 +178,24 @@
             background.style.opacity = 0;
             
             setTimeout(() => {
-                // Move to next slide (loop back to 0 after last slide)
-                currentIndex = (currentIndex + 1) % backgroundGifs.length;
+                // Move to next slide
+                currentIndex++;
+                
+                // If we've shown all slides, reshuffle and start over
+                if (currentIndex >= shuffledOrder.length) {
+                    shuffledOrder = shuffleArray(backgroundGifs);
+                    currentIndex = 0;
+                }
                 
                 // Change background image
-                background.style.backgroundImage = `url('${backgroundGifs[currentIndex]}')`;
+                background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
                 
                 // Fade in new slide
                 setTimeout(() => {
                     background.style.opacity = 1;
-                }, 100); // Small delay for smoother transition
+                }, 100);
                 
-            }, 800); // Match the CSS transition duration
+            }, 800);
         }
         
         // Start slideshow when page loads
