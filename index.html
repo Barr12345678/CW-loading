@@ -23,30 +23,7 @@
             background-position: center;
             background-repeat: no-repeat;
             z-index: 0;
-            animation: slideshow 15s infinite;
-        }
-        
-        @keyframes slideshow {
-            0%, 33% { 
-                background-image: url('background1.gif');
-                opacity: 1;
-            }
-            36%, 40% {
-                background-image: url('background1.gif');
-                opacity: 0;
-            }
-            43%, 66% { 
-                background-image: url('background2.gif');
-                opacity: 1;
-            }
-            69%, 73% {
-                background-image: url('background2.gif');
-                opacity: 0;
-            }
-            76%, 100% { 
-                background-image: url('background3.gif');
-                opacity: 1;
-            }
+            transition: opacity 0.8s ease-in-out;
         }
         
         .overlay {
@@ -138,7 +115,7 @@
     </style>
 </head>
 <body>
-    <div class="background-slideshow"></div>
+    <div class="background-slideshow" id="background"></div>
     <div class="overlay"></div>
     
     <audio id="background-music" loop>
@@ -169,6 +146,47 @@
     </div>
     
     <script>
+        // Slideshow variables
+        const backgroundGifs = ['background1.gif', 'background2.gif', 'background3.gif'];
+        let currentIndex = 0;
+        
+        // Initialize slideshow
+        function initSlideshow() {
+            const background = document.getElementById('background');
+            background.style.backgroundImage = `url('${backgroundGifs[currentIndex]}')`;
+            background.style.opacity = 1;
+        }
+        
+        // Change to next slide smoothly
+        function nextSlide() {
+            const background = document.getElementById('background');
+            
+            // Fade out current slide
+            background.style.opacity = 0;
+            
+            setTimeout(() => {
+                // Move to next slide (loop back to 0 after last slide)
+                currentIndex = (currentIndex + 1) % backgroundGifs.length;
+                
+                // Change background image
+                background.style.backgroundImage = `url('${backgroundGifs[currentIndex]}')`;
+                
+                // Fade in new slide
+                setTimeout(() => {
+                    background.style.opacity = 1;
+                }, 100); // Small delay for smoother transition
+                
+            }, 800); // Match the CSS transition duration
+        }
+        
+        // Start slideshow when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initSlideshow();
+            // Change slide every 6 seconds (5 seconds visible + 1 second transition)
+            setInterval(nextSlide, 6000);
+        });
+        
+        // Garry's Mod loading API functions
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
             document.querySelector('h1').textContent = servername;
             
