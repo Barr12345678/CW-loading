@@ -301,10 +301,10 @@
         let shuffledOrder = [];
         let currentIndex = 0;
         
-        // Loading progress variables with backwards prevention
+        // Loading progress variables
         window.filesTotal = 0;
         window.filesNeeded = 0;
-        window.maxProgress = 0; // Track the highest progress achieved
+        window.maxProgress = 0;
         window.downloadedFiles = 0;
         
         // Shuffle function
@@ -355,7 +355,24 @@
             setInterval(nextSlide, 6000);
         });
         
-        // Progress update function that prevents going backwards
+        // Force progress to specific percentage
+        function forceProgress(percentage, reason) {
+            const progressBar = document.getElementById('progress');
+            const progressText = document.getElementById('progress-percent');
+            
+            window.maxProgress = Math.max(window.maxProgress, percentage);
+            
+            if (progressBar) {
+                progressBar.style.width = percentage + "%";
+            }
+            if (progressText) {
+                progressText.textContent = percentage + "%";
+            }
+            
+            console.log(`FORCED Progress to ${percentage}% - Reason: ${reason}`);
+        }
+        
+        // Progress update function
         function updateProgress() {
             try {
                 let progress = 0;
@@ -364,56 +381,27 @@
                     const downloaded = Math.max(0, window.filesTotal - window.filesNeeded);
                     progress = Math.floor((downloaded / window.filesTotal) * 100);
                 } else if (window.downloadedFiles > 0) {
-                    // Fallback calculation
                     progress = Math.min(window.downloadedFiles * 5, 90);
                 }
                 
-                // Ensure progress is between 0 and 100
                 progress = Math.max(0, Math.min(100, progress));
                 
-                // IMPORTANT: Only update if progress is higher than before
+                // Only update if progress is higher than before
                 if (progress > window.maxProgress) {
                     window.maxProgress = progress;
-                } else {
-                    // Use the highest progress achieved so far
-                    progress = window.maxProgress;
-                }
-                
-                // Special handling for connection phases
-                const statusElement = document.getElementById('status-text');
-                if (statusElement) {
-                    const currentStatus = statusElement.textContent.toLowerCase();
                     
-                    // If we're in connection phase and progress is low, boost it
-                    if (currentStatus.includes('connection') || currentStatus.includes('secure')) {
-                        progress = Math.max(progress, window.maxProgress + 5);
-                        window.maxProgress = progress;
+                    const progressBar = document.getElementById('progress');
+                    const progressText = document.getElementById('progress-percent');
+                    
+                    if (progressBar) {
+                        progressBar.style.width = progress + "%";
                     }
-                    
-                    // If we're starting Lua, ensure we're at least 85%
-                    if (currentStatus.includes('lua') || currentStatus.includes('starting')) {
-                        progress = Math.max(progress, 85);
-                        window.maxProgress = progress;
+                    if (progressText) {
+                        progressText.textContent = progress + "%";
                     }
                 }
                 
-                // Ensure we never exceed 100%
-                progress = Math.min(100, progress);
-                window.maxProgress = Math.min(100, window.maxProgress);
-                
-                // Update progress bar
-                const progressBar = document.getElementById('progress');
-                const progressText = document.getElementById('progress-percent');
-                
-                if (progressBar) {
-                    progressBar.style.width = progress + "%";
-                }
-                if (progressText) {
-                    progressText.textContent = progress + "%";
-                }
-                
-                // Debug logging
-                console.log(`Progress: ${progress}% (Max: ${window.maxProgress}%) - Files: ${window.filesTotal - window.filesNeeded}/${window.filesTotal}`);
+                console.log(`Progress: ${progress}% (Max: ${window.maxProgress}%)`);
                 
             } catch (error) {
                 console.log("Progress update error:", error);
@@ -439,7 +427,6 @@
         
         function SetFilesTotal(total) {
             try {
-                // Only update if it's a reasonable increase
                 const newTotal = parseInt(total) || 0;
                 if (newTotal > window.filesTotal || window.filesTotal === 0) {
                     window.filesTotal = newTotal;
@@ -483,11 +470,29 @@
                 if (statusElement && status) {
                     statusElement.textContent = status;
                     
-                    // Boost progress for certain status messages
-                    if (status.toLowerCase().includes('connection') || 
-                        status.toLowerCase().includes('secure') ||
-                        status.toLowerCase().includes('lua')) {
-                        updateProgress();
+                    // FORCE SPECIFIC PROGRESS BASED ON STATUS
+                    const statusLower = status.toLowerCase();
+                    
+                    if (statusLower.includes('lua started') || statusLower.includes('starting lua')) {
+                        forceProgress(99, 'Lua Started');
+                    }
+                    else if (statusLower.includes('lua') && statusLower.includes('start')) {
+                        forceProgress(95, 'Lua Starting');
+                    }
+                    else if (statusLower.includes('connection') || statusLower.includes('secure')) {
+                        forceProgress(Math.max(window.maxProgress, 75), 'Secure Connection');
+                    }
+                    else if (statusLower.includes('retrieving') || statusLower.includes('server info')) {
+                        forceProgress(Math.max(window.maxProgress, 30), 'Retrieving Server Info');
+                    }
+                    else if (statusLower.includes('workshop')) {
+                        forceProgress(Math.max(window.maxProgress, 50), 'Workshop Content');
+                    }
+                    else if (statusLower.includes('sending client info')) {
+                        forceProgress(Math.max(window.maxProgress, 85), 'Sending Client Info');
+                    }
+                    else if (statusLower.includes('spawning')) {
+                        forceProgress(100, 'Spawning Player');
                     }
                 }
                 console.log("Status:", status);
