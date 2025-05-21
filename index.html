@@ -151,6 +151,10 @@
         let shuffledOrder = [];
         let currentIndex = 0;
         
+        // Loading progress variables (FIXED)
+        let filesTotal = 0;
+        let filesNeeded = 0;
+        
         // Shuffle function
         function shuffleArray(array) {
             const shuffled = [...array];
@@ -205,7 +209,7 @@
             setInterval(nextSlide, 6000);
         });
         
-        // Garry's Mod loading API functions
+        // FIXED Garry's Mod loading API functions
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
             document.querySelector('h1').textContent = servername;
             
@@ -219,12 +223,12 @@
         }
         
         function SetFilesTotal(total) {
-            this.filesTotal = total;
+            filesTotal = total;
             updateProgress();
         }
         
         function SetFilesNeeded(needed) {
-            this.filesNeeded = needed;
+            filesNeeded = needed;
             updateProgress();
         }
         
@@ -237,9 +241,17 @@
         }
         
         function updateProgress() {
-            if (this.filesTotal > 0) {
-                var progress = Math.floor(((this.filesTotal - this.filesNeeded) / this.filesTotal) * 100);
+            if (filesTotal > 0 && filesNeeded >= 0) {
+                var downloaded = filesTotal - filesNeeded;
+                var progress = Math.floor((downloaded / filesTotal) * 100);
+                
+                // Ensure progress stays between 0 and 100
+                progress = Math.max(0, Math.min(100, progress));
+                
                 document.getElementById('progress').style.width = progress + "%";
+                
+                // Debug info (you can remove this later)
+                console.log(`Progress: ${downloaded}/${filesTotal} = ${progress}%`);
             }
         }
     </script>
