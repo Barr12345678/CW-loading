@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Clone Wars RP Loading Screen</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
@@ -292,97 +295,206 @@
         </div>
     </div>
     
-<script>
-    // Slideshow variables
-    const backgroundGifs = ['background1.gif', 'background2.gif', 'background3.gif', 'background4.gif', 'background5.gif'];
-    let shuffledOrder = [];
-    let currentIndex = 0;
-    
-    // Loading progress variables with backwards prevention
-    window.filesTotal = 0;
-    window.filesNeeded = 0;
-    window.maxProgress = 0; // Track the highest progress achieved
-    window.downloadedFiles = 0;
-    
-    // Shuffle function
-    function shuffleArray(array) {
-        const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-    }
-    
-    // Initialize slideshow
-    function initSlideshow() {
-        shuffledOrder = shuffleArray(backgroundGifs);
-        currentIndex = 0;
-        const background = document.getElementById('background');
-        background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
-        background.style.opacity = 1;
-    }
-    
-    // Change to next slide
-    function nextSlide() {
-        const background = document.getElementById('background');
+    <script>
+        // Slideshow variables
+        const backgroundGifs = ['background1.gif', 'background2.gif', 'background3.gif', 'background4.gif', 'background5.gif'];
+        let shuffledOrder = [];
+        let currentIndex = 0;
         
-        background.style.opacity = 0;
+        // Loading progress variables with backwards prevention
+        window.filesTotal = 0;
+        window.filesNeeded = 0;
+        window.maxProgress = 0; // Track the highest progress achieved
+        window.downloadedFiles = 0;
         
-        setTimeout(() => {
-            currentIndex++;
-            
-            if (currentIndex >= shuffledOrder.length) {
-                shuffledOrder = shuffleArray(backgroundGifs);
-                currentIndex = 0;
+        // Shuffle function
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
-            
+            return shuffled;
+        }
+        
+        // Initialize slideshow
+        function initSlideshow() {
+            shuffledOrder = shuffleArray(backgroundGifs);
+            currentIndex = 0;
+            const background = document.getElementById('background');
             background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
+            background.style.opacity = 1;
+        }
+        
+        // Change to next slide
+        function nextSlide() {
+            const background = document.getElementById('background');
+            
+            background.style.opacity = 0;
             
             setTimeout(() => {
-                background.style.opacity = 1;
-            }, 100);
-            
-        }, 800);
-    }
-    
-    // Start slideshow
-    document.addEventListener('DOMContentLoaded', function() {
-        initSlideshow();
-        setInterval(nextSlide, 6000);
-    });
-    
-    // Progress update function that prevents going backwards
-    function updateProgress() {
-        try {
-            let progress = 0;
-            
-            if (window.filesTotal > 0) {
-                const downloaded = Math.max(0, window.filesTotal - window.filesNeeded);
-                progress = Math.floor((downloaded / window.filesTotal) * 100);
-            } else if (window.downloadedFiles > 0) {
-                // Fallback calculation
-                progress = Math.min(window.downloadedFiles * 5, 90);
-            }
-            
-            // Ensure progress is between 0 and 100
-            progress = Math.max(0, Math.min(100, progress));
-            
-            // IMPORTANT: Only update if progress is higher than before
-            if (progress > window.maxProgress) {
-                window.maxProgress = progress;
-            } else {
-                // Use the highest progress achieved so far
-                progress = window.maxProgress;
-            }
-            
-            // Special handling for connection phases
-            const statusElement = document.getElementById('status-text');
-            if (statusElement) {
-                const currentStatus = statusElement.textContent.toLowerCase();
+                currentIndex++;
                 
-                // If we're in connection phase and progress is low, boost it
-                if (currentStatus.includes('connection') || currentStatus.includes('secure')) {
-                    progress = Math.max(progress, window.maxProgress + 5);
+                if (currentIndex >= shuffledOrder.length) {
+                    shuffledOrder = shuffleArray(backgroundGifs);
+                    currentIndex = 0;
+                }
+                
+                background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
+                
+                setTimeout(() => {
+                    background.style.opacity = 1;
+                }, 100);
+                
+            }, 800);
+        }
+        
+        // Start slideshow
+        document.addEventListener('DOMContentLoaded', function() {
+            initSlideshow();
+            setInterval(nextSlide, 6000);
+        });
+        
+        // Progress update function that prevents going backwards
+        function updateProgress() {
+            try {
+                let progress = 0;
+                
+                if (window.filesTotal > 0) {
+                    const downloaded = Math.max(0, window.filesTotal - window.filesNeeded);
+                    progress = Math.floor((downloaded / window.filesTotal) * 100);
+                } else if (window.downloadedFiles > 0) {
+                    // Fallback calculation
+                    progress = Math.min(window.downloadedFiles * 5, 90);
+                }
+                
+                // Ensure progress is between 0 and 100
+                progress = Math.max(0, Math.min(100, progress));
+                
+                // IMPORTANT: Only update if progress is higher than before
+                if (progress > window.maxProgress) {
+                    window.maxProgress = progress;
+                } else {
+                    // Use the highest progress achieved so far
+                    progress = window.maxProgress;
+                }
+                
+                // Special handling for connection phases
+                const statusElement = document.getElementById('status-text');
+                if (statusElement) {
+                    const currentStatus = statusElement.textContent.toLowerCase();
+                    
+                    // If we're in connection phase and progress is low, boost it
+                    if (currentStatus.includes('connection') || currentStatus.includes('secure')) {
+                        progress = Math.max(progress, window.maxProgress + 5);
+                        window.maxProgress = progress;
+                    }
+                    
+                    // If we're starting Lua, ensure we're at least 85%
+                    if (currentStatus.includes('lua') || currentStatus.includes('starting')) {
+                        progress = Math.max(progress, 85);
+                        window.maxProgress = progress;
+                    }
+                }
+                
+                // Ensure we never exceed 100%
+                progress = Math.min(100, progress);
+                window.maxProgress = Math.min(100, window.maxProgress);
+                
+                // Update progress bar
+                const progressBar = document.getElementById('progress');
+                const progressText = document.getElementById('progress-percent');
+                
+                if (progressBar) {
+                    progressBar.style.width = progress + "%";
+                }
+                if (progressText) {
+                    progressText.textContent = progress + "%";
+                }
+                
+                // Debug logging
+                console.log(`Progress: ${progress}% (Max: ${window.maxProgress}%) - Files: ${window.filesTotal - window.filesNeeded}/${window.filesTotal}`);
+                
+            } catch (error) {
+                console.log("Progress update error:", error);
+            }
+        }
+        
+        // Garry's Mod loading API functions
+        function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
+            try {
+                document.querySelector('.server-title').textContent = servername || 'Clone Wars RP';
+                
+                var music = document.getElementById('background-music');
+                if (music && volume !== undefined) {
+                    music.volume = Math.max(0, Math.min(1, volume));
+                    music.play().catch(function(error) {
+                        console.log("Audio couldn't play automatically:", error);
+                    });
+                }
+            } catch (error) {
+                console.log("GameDetails error:", error);
+            }
+        }
+        
+        function SetFilesTotal(total) {
+            try {
+                // Only update if it's a reasonable increase
+                const newTotal = parseInt(total) || 0;
+                if (newTotal > window.filesTotal || window.filesTotal === 0) {
+                    window.filesTotal = newTotal;
+                }
+                console.log("Files Total:", window.filesTotal);
+                updateProgress();
+            } catch (error) {
+                console.log("SetFilesTotal error:", error);
+            }
+        }
+        
+        function SetFilesNeeded(needed) {
+            try {
+                window.filesNeeded = parseInt(needed) || 0;
+                console.log("Files Needed:", window.filesNeeded);
+                updateProgress();
+            } catch (error) {
+                console.log("SetFilesNeeded error:", error);
+            }
+        }
+        
+        function DownloadingFile(fileName) {
+            try {
+                window.downloadedFiles = (window.downloadedFiles || 0) + 1;
+                
+                const statusElement = document.getElementById('status-text');
+                if (statusElement && fileName) {
+                    statusElement.textContent = "Downloading: " + fileName.split('/').pop();
+                }
+                
+                console.log("Downloading:", fileName);
+                updateProgress();
+            } catch (error) {
+                console.log("DownloadingFile error:", error);
+            }
+        }
+        
+        function SetStatusChanged(status) {
+            try {
+                const statusElement = document.getElementById('status-text');
+                if (statusElement && status) {
+                    statusElement.textContent = status;
+                    
+                    // Boost progress for certain status messages
+                    if (status.toLowerCase().includes('connection') || 
+                        status.toLowerCase().includes('secure') ||
+                        status.toLowerCase().includes('lua')) {
+                        updateProgress();
+                    }
+                }
+                console.log("Status:", status);
+            } catch (error) {
+                console.log("SetStatusChanged error:", error);
+            }
+        }
+    </script>
 </body>
 </html>
