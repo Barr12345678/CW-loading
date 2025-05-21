@@ -3,11 +3,13 @@
 <head>
     <title>Clone Wars RP Loading Screen</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            font-family: Arial, sans-serif;
+            font-family: 'Orbitron', Arial, sans-serif;
             background-color: #000000;
             color: white;
             overflow: hidden;
@@ -32,85 +34,207 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(255,90,0,0.1) 50%, rgba(0,0,0,0.8) 100%);
             z-index: 1;
         }
         
-        .content {
+        .main-container {
             position: relative;
             z-index: 2;
-            text-align: center;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: 40px;
+            box-sizing: border-box;
         }
         
-        h1 {
-            font-size: 4em;
-            margin-bottom: 30px;
-            color: #ffffff;
-            text-shadow: 0 0 10px #ff5a00;
-            font-weight: bold;
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .server-title {
+            font-size: 5em;
+            font-weight: 900;
+            margin: 0;
+            background: linear-gradient(45deg, #ff5a00, #ff8c00, #ff5a00);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        
+        @keyframes titleGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .server-subtitle {
+            font-size: 1.2em;
+            color: #cccccc;
+            margin-top: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        /* Center Content */
+        .center-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Loading Section */
+        .loading-section {
+            flex: 1;
+            max-width: 600px;
+        }
+        
+        .loading-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 90, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(255, 90, 0, 0.2);
         }
         
         .status-text {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            color: #dddddd;
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            color: #ff8c00;
+            text-align: center;
+            font-weight: 700;
         }
         
         .progress-container {
-            width: 80%;
-            max-width: 600px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #cccccc;
         }
         
         #progress-bar {
             width: 100%;
-            height: 30px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             overflow: hidden;
-            border: 1px solid rgba(255, 90, 0, 0.3);
+            position: relative;
         }
         
         #progress {
             width: 0%;
             height: 100%;
-            background-color: #ff5a00;
-            border-radius: 15px;
+            background: linear-gradient(90deg, #ff5a00, #ff8c00);
+            border-radius: 20px;
             transition: width 0.3s ease;
+            position: relative;
         }
         
-        .rules {
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 25px 40px;
-            border-radius: 10px;
-            max-width: 600px;
-            border: 1px solid rgba(255, 90, 0, 0.5);
+        #progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
         }
         
-        .rules h2 {
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Rules Section */
+        .rules-section {
+            flex: 1;
+            max-width: 500px;
+        }
+        
+        .rules-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 90, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(255, 90, 0, 0.2);
+        }
+        
+        .rules-title {
             color: #ff5a00;
-            margin-top: 0;
-            font-size: 2em;
+            margin: 0 0 30px 0;
+            font-size: 2.2em;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-align: center;
+            font-weight: 700;
         }
         
-        .rules ol {
-            text-align: left;
-            padding-left: 20px;
-            color: #ffffff;
-            font-size: 1.2em;
+        .rules-list {
+            list-style: none;
+            padding: 0;
             margin: 0;
         }
         
-        .rules li {
-            margin-bottom: 15px;
+        .rules-list li {
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: rgba(255, 90, 0, 0.1);
+            border-left: 4px solid #ff5a00;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        
+        .rules-list li:hover {
+            background: rgba(255, 90, 0, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .rule-number {
+            color: #ff5a00;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .connection-info {
+            font-size: 1em;
+            color: #888;
+            font-weight: 400;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .center-content {
+                flex-direction: column;
+                gap: 40px;
+            }
+            
+            .server-title {
+                font-size: 4em;
+            }
         }
     </style>
 </head>
@@ -122,26 +246,49 @@
         <source src="music.mp3" type="audio/mp3">
     </audio>
     
-    <div class="content">
-        <h1>Clone Wars RP</h1>
+    <div class="main-container">
+        <div class="header">
+            <h1 class="server-title">Clone Wars RP</h1>
+            <div class="server-subtitle">Galactic Republic</div>
+        </div>
         
-        <div class="status-text" id="status-text">Connecting...</div>
-        
-        <div class="progress-container">
-            <div id="progress-bar">
-                <div id="progress"></div>
+        <div class="center-content">
+            <div class="loading-section">
+                <div class="loading-card">
+                    <div class="status-text" id="status-text">Connecting to Galaxy...</div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Loading Progress</span>
+                            <span id="progress-percent">0%</span>
+                        </div>
+                        <div id="progress-bar">
+                            <div id="progress"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="connection-info">
+                        <div>Establishing secure connection...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="rules-section">
+                <div class="rules-card">
+                    <h2 class="rules-title">Server Protocol</h2>
+                    <ul class="rules-list">
+                        <li><span class="rule-number">01</span>Respect all Republic personnel</li>
+                        <li><span class="rule-number">02</span>No unauthorized combat (RDM)</li>
+                        <li><span class="rule-number">03</span>Follow chain of command</li>
+                        <li><span class="rule-number">04</span>Obey commanding officers</li>
+                        <li><span class="rule-number">05</span>Honor the Republic</li>
+                    </ul>
+                </div>
             </div>
         </div>
         
-        <div class="rules">
-            <h2>SERVER RULES</h2>
-            <ol>
-                <li>Respect all players</li>
-                <li>No RDM (Random Death Match)</li>
-                <li>Follow the RP guidelines</li>
-                <li>Listen to staff</li>
-                <li>Have fun!</li>
-            </ol>
+        <div class="footer">
+            <div class="connection-info">May the Force be with you, soldier</div>
         </div>
     </div>
     
@@ -151,7 +298,7 @@
         let shuffledOrder = [];
         let currentIndex = 0;
         
-        // Loading progress variables (FIXED)
+        // Loading progress variables
         let filesTotal = 0;
         let filesNeeded = 0;
         
@@ -165,7 +312,7 @@
             return shuffled;
         }
         
-        // Initialize slideshow with first shuffle
+        // Initialize slideshow
         function initSlideshow() {
             shuffledOrder = shuffleArray(backgroundGifs);
             currentIndex = 0;
@@ -174,27 +321,22 @@
             background.style.opacity = 1;
         }
         
-        // Change to next slide smoothly
+        // Change to next slide
         function nextSlide() {
             const background = document.getElementById('background');
             
-            // Fade out current slide
             background.style.opacity = 0;
             
             setTimeout(() => {
-                // Move to next slide
                 currentIndex++;
                 
-                // If we've shown all slides, reshuffle and start over
                 if (currentIndex >= shuffledOrder.length) {
                     shuffledOrder = shuffleArray(backgroundGifs);
                     currentIndex = 0;
                 }
                 
-                // Change background image
                 background.style.backgroundImage = `url('${shuffledOrder[currentIndex]}')`;
                 
-                // Fade in new slide
                 setTimeout(() => {
                     background.style.opacity = 1;
                 }, 100);
@@ -202,16 +344,15 @@
             }, 800);
         }
         
-        // Start slideshow when page loads
+        // Start slideshow
         document.addEventListener('DOMContentLoaded', function() {
             initSlideshow();
-            // Change slide every 6 seconds (5 seconds visible + 1 second transition)
             setInterval(nextSlide, 6000);
         });
         
-        // FIXED Garry's Mod loading API functions
+        // Garry's Mod loading API functions
         function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
-            document.querySelector('h1').textContent = servername;
+            document.querySelector('.server-title').textContent = servername;
             
             var music = document.getElementById('background-music');
             if (music) {
@@ -245,13 +386,10 @@
                 var downloaded = filesTotal - filesNeeded;
                 var progress = Math.floor((downloaded / filesTotal) * 100);
                 
-                // Ensure progress stays between 0 and 100
                 progress = Math.max(0, Math.min(100, progress));
                 
                 document.getElementById('progress').style.width = progress + "%";
-                
-                // Debug info (you can remove this later)
-                console.log(`Progress: ${downloaded}/${filesTotal} = ${progress}%`);
+                document.getElementById('progress-percent').textContent = progress + "%";
             }
         }
     </script>
