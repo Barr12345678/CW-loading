@@ -298,9 +298,10 @@
     let shuffledOrder = [];
     let currentIndex = 0;
     
-    // Loading progress variables - using window object for better compatibility
+    // Loading progress variables with backwards prevention
     window.filesTotal = 0;
     window.filesNeeded = 0;
+    window.maxProgress = 0; // Track the highest progress achieved
     window.downloadedFiles = 0;
     
     // Shuffle function
@@ -351,7 +352,7 @@
         setInterval(nextSlide, 6000);
     });
     
-    // More robust progress update function
+    // Progress update function that prevents going backwards
     function updateProgress() {
         try {
             let progress = 0;
@@ -361,121 +362,27 @@
                 progress = Math.floor((downloaded / window.filesTotal) * 100);
             } else if (window.downloadedFiles > 0) {
                 // Fallback calculation
-                progress = Math.min(window.downloadedFiles * 10, 95);
+                progress = Math.min(window.downloadedFiles * 5, 90);
             }
             
             // Ensure progress is between 0 and 100
             progress = Math.max(0, Math.min(100, progress));
             
-            // Update progress bar
-            const progressBar = document.getElementById('progress');
-            const progressText = document.getElementById('progress-percent');
-            
-            if (progressBar) {
-                progressBar.style.width = progress + "%";
-            }
-            if (progressText) {
-                progressText.textContent = progress + "%";
+            // IMPORTANT: Only update if progress is higher than before
+            if (progress > window.maxProgress) {
+                window.maxProgress = progress;
+            } else {
+                // Use the highest progress achieved so far
+                progress = window.maxProgress;
             }
             
-            // Debug logging
-            console.log(`Progress Update: ${window.filesTotal - window.filesNeeded}/${window.filesTotal} = ${progress}%`);
-            
-        } catch (error) {
-            console.log("Progress update error:", error);
-        }
-    }
-    
-    // Garry's Mod loading API functions - improved versions
-    function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
-        try {
-            document.querySelector('.server-title').textContent = servername || 'Clone Wars RP';
-            
-            var music = document.getElementById('background-music');
-            if (music && volume !== undefined) {
-                music.volume = Math.max(0, Math.min(1, volume));
-                music.play().catch(function(error) {
-                    console.log("Audio couldn't play automatically:", error);
-                });
-            }
-        } catch (error) {
-            console.log("GameDetails error:", error);
-        }
-    }
-    
-    function SetFilesTotal(total) {
-        try {
-            window.filesTotal = parseInt(total) || 0;
-            console.log("Files Total:", window.filesTotal);
-            updateProgress();
-        } catch (error) {
-            console.log("SetFilesTotal error:", error);
-        }
-    }
-    
-    function SetFilesNeeded(needed) {
-        try {
-            window.filesNeeded = parseInt(needed) || 0;
-            console.log("Files Needed:", window.filesNeeded);
-            updateProgress();
-        } catch (error) {
-            console.log("SetFilesNeeded error:", error);
-        }
-    }
-    
-    function DownloadingFile(fileName) {
-        try {
-            window.downloadedFiles = (window.downloadedFiles || 0) + 1;
-            
+            // Special handling for connection phases
             const statusElement = document.getElementById('status-text');
-            if (statusElement && fileName) {
-                statusElement.textContent = "Downloading: " + fileName.split('/').pop();
-            }
-            
-            console.log("Downloading:", fileName);
-            updateProgress();
-        } catch (error) {
-            console.log("DownloadingFile error:", error);
-        }
-    }
-    
-    function SetStatusChanged(status) {
-        try {
-            const statusElement = document.getElementById('status-text');
-            if (statusElement && status) {
-                statusElement.textContent = status;
-            }
-            console.log("Status:", status);
-        } catch (error) {
-            console.log("SetStatusChanged error:", error);
-        }
-    }
-    
-    // Fallback progress simulation for testing
-    let testProgress = 0;
-    function simulateProgress() {
-        if (window.location.protocol !== 'steam:' && window.filesTotal === 0) {
-            testProgress += 2;
-            if (testProgress <= 100) {
-                const progressBar = document.getElementById('progress');
-                const progressText = document.getElementById('progress-percent');
+            if (statusElement) {
+                const currentStatus = statusElement.textContent.toLowerCase();
                 
-                if (progressBar) progressBar.style.width = testProgress + "%";
-                if (progressText) progressText.textContent = testProgress + "%";
-                
-                if (testProgress < 100) {
-                    setTimeout(simulateProgress, 200);
-                }
-            }
-        }
-    }
-    
-    // Start test simulation after 3 seconds if no real progress
-    setTimeout(() => {
-        if (window.filesTotal === 0) {
-            simulateProgress();
-        }
-    }, 3000);
-</script>
+                // If we're in connection phase and progress is low, boost it
+                if (currentStatus.includes('connection') || currentStatus.includes('secure')) {
+                    progress = Math.max(progress, window.maxProgress + 5);
 </body>
 </html>
