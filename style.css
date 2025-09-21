@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Clone Wars RP Loading Screen</title>
+    <title>Vex Networks CWRP Loading Screen</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,7 +20,7 @@
         <div class="logo">
             <img src="logo.png" alt="Server Logo">
         </div>
-        <h1>Clone Wars RP</h1>
+        <h1>Vex Networks CWRP</h1>
         
         <div class="progress-container">
             <div id="progress-bar"><div id="progress"></div></div>
